@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Independencia y Presupuesto | Egresados de Secundaria</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-slate-100 min-h-screen font-sans antialiased flex flex-col justify-between">
+
+    <!-- Header / Hero Section -->
+    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-house-chimney-user text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Vivir Solo <span class="text-emerald-400">Simulador</span></h1>
+                    <p class="text-xs sm:text-sm text-slate-400">Guía práctica y financiera para egresados de secundaria</p>
+                </div>
+            </div>
+            <!-- Quick Stats Header -->
+            <div class="flex items-center gap-3 bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700/60 text-sm">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-piggy-bank text-emerald-400"></i>
+                    <span class="text-slate-300">Ahorros:</span>
+                    <span id="header-savings" class="font-bold text-emerald-400">$150,000</span>
+                </div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-brain text-amber-400"></i>
+                    <span class="text-slate-300">Estrés:</span>
+                    <span id="header-stress" class="font-bold text-amber-400">Bajo (20%)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 w-full">
+        <div class="flex overflow-x-auto space-x-2 bg-slate-800/60 p-1.5 rounded-2xl border border-slate-700/60 backdrop-blur-md no-scrollbar">
+            <button onclick="switchTab('budget')" id="btn-budget" class="flex-1 min-w-[150px] py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                <i class="fa-solid fa-wallet"></i> Presupuesto
+            </button>
+            <button onclick="switchTab('challenges')" id="btn-challenges" class="flex-1 min-w-[150px] py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50">
+                <i class="fa-solid fa-bolt"></i> Imprevistos
+            </button>
+            <button onclick="switchTab('checklist')" id="btn-checklist" class="flex-1 min-w-[150px] py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50">
+                <i class="fa-solid fa-list-check"></i> Trámites
+            </button>
+            <button onclick="switchTab('tips')" id="btn-tips" class="flex-1 min-w-[150px] py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50">
+                <i class="fa-solid fa-book-open"></i> Tips de Supervivencia
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6 flex-grow w-full">
+
+        <!-- TAB 1: PRESUPUESTO MENSUAL -->
+        <section id="tab-budget" class="space-y-6">
+            <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-calculator text-indigo-400"></i> Simulador de Presupuesto Mensual
+                        </h2>
+                        <p class="text-sm text-slate-400">Ajusta tus ingresos y gastos estimados para saber si tus números cierran al vivir solo.</p>
+                    </div>
+                    <button onclick="resetBudget()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg text-slate-300 transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> Restablecer Valores
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Inputs Form -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- INGRESOS -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-arrow-down"></i> Ingresos Mensuales Estimados
+                            </h3>
+                            <div class="space-y-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                                <!-- Input Item -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Empleo Part-time / Full-time</span>
+                                        <span id="val-job" class="font-bold text-emerald-400">$180,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="500000" step="10000" value="180000" id="range-job" oninput="syncBudget('job')" class="w-full accent-emerald-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <!-- Input Item -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Changas / Freelance / Proyectos</span>
+                                        <span id="val-gigs" class="font-bold text-emerald-400">$50,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="300000" step="5000" value="50000" id="range-gigs" oninput="syncBudget('gigs')" class="w-full accent-emerald-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <!-- Input Item -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Ayuda Familiar / Becas</span>
+                                        <span id="val-family" class="font-bold text-emerald-400">$40,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="250000" step="5000" value="40000" id="range-family" oninput="syncBudget('family')" class="w-full accent-emerald-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EGRESOS -->
+                        <div>
+                            <h3 class="text-sm font-semibold text-rose-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-arrow-up"></i> Gastos y Egresos Mensuales
+                            </h3>
+                            <div class="space-y-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Alquiler Estimado</span>
+                                        <span id="val-rent" class="font-bold text-rose-400">$120,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="400000" step="10000" value="120000" id="range-rent" oninput="syncBudget('rent')" class="w-full accent-rose-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Supermercado / Comida</span>
+                                        <span id="val-super" class="font-bold text-rose-400">$70,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="250000" step="5000" value="70000" id="range-super" oninput="syncBudget('super')" class="w-full accent-rose-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Servicios (Luz, Gas, Internet)</span>
+                                        <span id="val-utilities" class="font-bold text-rose-400">$25,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="100000" step="5000" value="25000" id="range-utilities" oninput="syncBudget('utilities')" class="w-full accent-rose-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Transporte / Movilidad</span>
+                                        <span id="val-transport" class="font-bold text-rose-400">$20,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="100000" step="5000" value="20000" id="range-transport" oninput="syncBudget('transport')" class="w-full accent-rose-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Ocio / Salidas / Suscripciones</span>
+                                        <span id="val-leisure" class="font-bold text-rose-400">$15,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="100000" step="5000" value="15000" id="range-leisure" oninput="syncBudget('leisure')" class="w-full accent-rose-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Ahorro Obligatorio</span>
+                                        <span id="val-saving" class="font-bold text-indigo-400">$20,000</span>
+                                    </div>
+                                    <input type="range" min="0" max="150000" step="5000" value="20000" id="range-saving" oninput="syncBudget('saving')" class="w-full accent-indigo-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary & Balance Dashboard -->
+                    <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+                        <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700/80 shadow-inner space-y-6">
+                            <h3 class="text-base font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-indigo-400"></i> Balance Financiero Mensual
+                            </h3>
+
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl">
+                                    <span class="text-sm text-slate-400">Total Ingresos:</span>
+                                    <span id="summary-income" class="text-lg font-bold text-emerald-400">$270,000</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-slate-800/50 p-3 rounded-xl">
+                                    <span class="text-sm text-slate-400">Total Egresos + Ahorro:</span>
+                                    <span id="summary-expenses" class="text-lg font-bold text-rose-400">$270,000</span>
+                                </div>
+                                <div id="balance-card" class="p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all duration-300 bg-emerald-950/40 border-emerald-500/30">
+                                    <span id="balance-label" class="text-xs font-semibold tracking-wider uppercase text-emerald-400 mb-1">Equilibrio Financiero</span>
+                                    <span id="summary-balance" class="text-2xl sm:text-3xl font-extrabold text-emerald-400">$0</span>
+                                </div>
+                            </div>
+
+                            <!-- Alert / Advice Box -->
+                            <div id="budget-advice" class="p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/30 text-emerald-200 text-xs sm:text-sm flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-emerald-400 text-lg mt-0.5"></i>
+                                <div>
+                                    <span class="font-bold block mb-0.5">¡Vas por buen camino!</span>
+                                    Tus ingresos cubren perfectamente tus gastos y te permiten ahorrar todos los meses.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar breakdown -->
+                        <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700/80 space-y-4">
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Distribución de Gastos</h4>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1 text-slate-300">
+                                    <span>Alquiler (Peso clave)</span>
+                                    <span id="pct-rent">44%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div id="bar-rent" class="bg-rose-500 h-full transition-all duration-300" style="width: 44%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1 text-slate-300">
+                                    <span>Alimentos y Supermercado</span>
+                                    <span id="pct-super">26%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div id="bar-super" class="bg-amber-500 h-full transition-all duration-300" style="width: 26%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1 text-slate-300">
+                                    <span>Otros Gastos & Servicios</span>
+                                    <span id="pct-others">30%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div id="bar-others" class="bg-indigo-500 h-full transition-all duration-300" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: DESAFÍOS E IMPREVISTOS -->
+        <section id="tab-challenges" class="space-y-6 hidden">
+            <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-400"></i> Tablero de Desafíos & Imprevistos
+                        </h2>
+                        <p class="text-sm text-slate-400">La vida adulta trae sorpresas. Pon a prueba tu capacidad de reacción ante situaciones reales.</p>
+                    </div>
+                    <button onclick="triggerRandomEvent()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 font-semibold text-xs rounded-xl text-white shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-dice"></i> Lanzar Desafío del Mes
+                    </button>
+                </div>
+
+                <!-- Event Card Container -->
+                <div id="event-display" class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-6 sm:p-8 space-y-6 text-center max-w-2xl mx-auto shadow-2xl">
+                    <div id="event-icon" class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl mx-auto border border-amber-500/30">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <span id="event-badge" class="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-xs font-semibold tracking-wider uppercase border border-amber-500/20">Imprevisto Cotidiano</span>
+                        <h3 id="event-title" class="text-xl font-bold text-white">¡Bienvenido al simulador de imprevistos!</h3>
+                        <p id="event-desc" class="text-sm text-slate-300 max-w-lg mx-auto">Haz clic en "Lanzar Desafío del Mes" para enfrentarte a una situación típica al vivir solo y toma decisiones que afectarán tus ahorros o tu nivel de estrés.</p>
+                    </div>
+
+                    <div id="event-actions" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+                        <button onclick="triggerRandomEvent()" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play">></i> Comenzar Desafíos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- History log / Stats recap -->
+                <div class="mt-8 bg-slate-900/50 p-5 rounded-xl border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-1">Ahorros Actuales</span>
+                        <span id="game-savings" class="text-lg font-bold text-emerald-400">$150,000</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-1">Nivel de Estrés</span>
+                        <span id="game-stress" class="text-lg font-bold text-amber-400">Bajo (20%)</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-1">Desafíos Superados</span>
+                        <span id="game-resolved" class="text-lg font-bold text-indigo-400">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: CHECKLIST DE TRÁMITES -->
+        <section id="tab-checklist" class="space-y-6 hidden">
+            <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> Checklist de Trámites Indispensables
+                        </h2>
+                        <p class="text-sm text-slate-400">Todo lo que necesitas resolver antes y después de mudarte solo por primera vez.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="checklist-counter" class="text-xs font-semibold bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30">0 de 10 completados</span>
+                        <button onclick="resetChecklist()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg text-slate-300 transition-colors">
+                            Reiniciar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checklist Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="checklist-container">
+                    <!-- Javascript will populate items -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: TIPS DE SUPERVIVENCIA -->
+        <section id="tab-tips" class="space-y-6 hidden">
+            <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+                <div class="mb-6 border-b border-slate-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-indigo-400"></i> Tips de Supervivencia para Independientes
+                    </h2>
+                    <p class="text-sm text-slate-400">Consejos clave de finanzas, hogar y contratos para evitar dolores de cabeza.</p>
+                </div>
+
+                <!-- Accordions Container -->
+                <div class="space-y-4" id="accordion-container">
+                    <!-- Tip 1 -->
+                    <div class="bg-slate-900/60 border border-slate-700/80 rounded-xl overflow-hidden transition-all">
+                        <button onclick="toggleAccordion(1)" class="w-full p-5 text-left flex justify-between items-center gap-4 hover:bg-slate-800/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-utensils"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-sm sm:text-base">Meal Prep & Compras Inteligentes en el Super</h3>
+                                    <p class="text-xs text-slate-400">Ahorra hasta un 40% en comida planificando tus menús semanales.</p>
+                                </div>
+                            </div>
+                            <i id="icon-acc-1" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                        </button>
+                        <div id="content-acc-1" class="hidden px-5 pb-5 pt-0 text-slate-300 text-sm space-y-3 border-t border-slate-800/80 pt-4">
+                            <p>Cocinar todos los días consume tiempo y dinero. El <strong>Meal Prep</strong> consiste en cocinar un solo día (por ejemplo, el domingo) las bases o platos de toda la semana y congelarlos.</p>
+                            <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                <li>Haz las compras con lista en mano y <strong>nunca vayas con hambre</strong> al supermercado.</li>
+                                <li class="text-emerald-400">Prioriza verduras de estación y marcas mayoristas o segundas marcas en productos secos (fideos, arroz, puré de tomate).</li>
+                                <li>Congela por porciones individuales para evitar desperdicios.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Tip 2 -->
+                    <div class="bg-slate-900/60 border border-slate-700/80 rounded-xl overflow-hidden transition-all">
+                        <button onclick="toggleAccordion(2)" class="w-full p-5 text-left flex justify-between items-center gap-4 hover:bg-slate-800/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-house-lock"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-sm sm:text-base">Lectura Clave de un Contrato de Alquiler</h3>
+                                    <p class="text-xs text-slate-400">Qué mirar para no caer en cláusulas abusivas ni sorpresas financieras.</p>
+                                </div>
+                            </div>
+                            <i id="icon-acc-2" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                        </button>
+                        <div id="content-acc-2" class="hidden px-5 pb-5 pt-0 text-slate-300 text-sm space-y-3 border-t border-slate-800/80 pt-4">
+                            <p>Firmar tu primer alquiler es un paso enorme. Presta especial atención a estos puntos antes de poner la firma:</p>
+                            <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                <li><strong>Índice de actualización:</strong> Revisa cada cuánto tiempo se ajusta el alquiler (ICL, IPC u otros índices) y asegúrate de entenderlo.</li>
+                                <li><strong>Expensas extraordinarias:</strong> Por ley, los gastos extraordinarios (reparaciones edilicias grandes, fondo de reserva) los paga el propietario, no el inquilino.</li>
+                                <li><strong>Garantías y Depósito:</strong> Consulta en cuántas cuotas puedes pagar el depósito de entrada y qué se exige como garantía (garantía propietaria, seguro de caución o recibos de sueldo).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Tip 3 -->
+                    <div class="bg-slate-900/60 border border-slate-700/80 rounded-xl overflow-hidden transition-all">
+                        <button onclick="toggleAccordion(3)" class="w-full p-5 text-left flex justify-between items-center gap-4 hover:bg-slate-800/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-sm sm:text-base">El Fondo de Emergencia: Tu Escudo Protector</h3>
+                                    <p class="text-xs text-slate-400">Por qué necesitas guardar dinero intocable para imprevistos mayores.</p>
+                                </div>
+                            </div>
+                            <i id="icon-acc-3" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                        </button>
+                        <div id="content-acc-3" class="hidden px-5 pb-5 pt-0 text-slate-300 text-sm space-y-3 border-t border-slate-800/80 pt-4">
+                            <p>Cuando vives solo, un imprevisto médico o la rotura de una heladera pueden desestabilizarte por completo si no estás preparado.</p>
+                            <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                <li>El objetivo ideal es juntar el equivalente a <strong>3 a 6 meses de tus gastos fijos</strong>.</li>
+                                <li>Guarda este dinero en una billetera virtual o cuenta remunerada que te de intereses diarios pero que tenga liquidez inmediata (retiro en el acto).</li>
+                                <li>Jamás uses el fondo de emergencia para vacaciones o compras de ocio.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Tip 4 -->
+                    <div class="bg-slate-900/60 border border-slate-700/80 rounded-xl overflow-hidden transition-all">
+                        <button onclick="toggleAccordion(4)" class="w-full p-5 text-left flex justify-between items-center gap-4 hover:bg-slate-800/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-coins"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-sm sm:text-base">Control de Gastos Hormiga</h3>
+                                    <p class="text-xs text-slate-400">El peligro invisible de los pequeños consumos diarios.</p>
+                                </div>
+                            </div>
+                            <i id="icon-acc-4" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-200"></i>
+                        </button>
+                        <div id="content-acc-4" class="hidden px-5 pb-5 pt-0 text-slate-300 text-sm space-y-3 border-t border-slate-800/80 pt-4">
+                            <p>Un café al paso todos los días, apps de delivery innecesarias, suscripciones a streaming que no miras... Los "gastos hormiga" parecen inofensivos pero al mes suman una fortuna.</p>
+                            <ul class="list-disc list-inside space-y-1 text-slate-400">
+                                <li>Haz una auditoría mensual de tus extractos bancarios y cancela las suscripciones que no uses.</li>
+                                <li>Lleva tu propia botella de agua y café cuando salgas por trámites o estudio/trabajo.</li>
+                                <li class="text-indigo-400">¡Ese dinero ahorrado puede ir directo a tu fondo de emergencia o a tus vacaciones!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-slate-900/80 border-t border-slate-800 py-6 mt-auto text-center text-xs text-slate-500">
+        <p>Simulador de Independencia para Egresados de Secundaria • Creado con ❤️ y Tailwind CSS</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- STATE MANAGEMENT ---
+        let state = {
+            budget: {
+                job: 180000,
+                gigs: 50000,
+                family: 40000,
+                rent: 120000,
+                super: 70000,
+                utilities: 25000,
+                transport: 20000,
+                leisure: 15000,
+                saving: 20000
+            },
+            game: {
+                savings: 150000,
+                stress: 20, // percentage 0-100
+                resolvedCount: 0
+            },
+            checklist: [
+                { id: 1, text: "Obtener CUIL / CUIT definitivo", category: "Administrativo", done: false },
+                { id: 2, text: "Abrir cuenta bancaria digital o billetera virtual", category: "Financiero", done: true },
+                { id: 3, text: "Armar y actualizar CV profesional", category: "Laboral", done: false },
+                { id: 4, text: "Averiguar requisitos, garantías y costos de alquiler", category: "Hogar", done: false },
+                { id: 5, text: "Gestionar obra social (OSDE, PAMI, prepaga o derivación)", category: "Salud", done: false },
+                { id: 6, text: "Cotizar servicios básicos (Luz, Gas, Internet)", category: "Hogar", done: false },
+                { id: 7, text: "Armar listado de utensilios básicos de cocina y limpieza", category: "Hogar", done: false },
+                { id: 8, text: "Diseñar fondo de emergencia (3 meses de gastos)", category: "Financiero", done: false },
+                { id: 9, text: "Planificar compras mayoristas y menús semanales", category: "Alimentación", done: false },
+                { id: 10, text: "Conocer derechos y obligaciones del inquilino", category: "Legal", done: false }
+            ]
+        };
+
+        // --- TAB NAVIGATION ---
+        function switchTab(tabId) {
+            const tabs = ['budget', 'challenges', 'checklist', 'tips'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`btn-${t}`);
+                if (t === tabId) {
+                    el.classList.remove('hidden');
+                    btn.className = "flex-1 min-w-[150px] py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = "flex-1 min-w-[150px] py-2.5 px-4 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-slate-700/50";
+                }
+            });
+        }
+
+        // --- FORMAT CURRENCY ---
+        function formatCurrency(amount) {
+            return '$' + amount.toLocaleString('es-AR');
+        }
+
+        // --- BUDGET SIMULATOR LOGIC ---
+        function syncBudget(key) {
+            const val = parseInt(document.getElementById(`range-${key}`).value);
+            state.budget[key] = val;
+            document.getElementById(`val-${key}`).innerText = formatCurrency(val);
+            calculateBudget();
+        }
+
+        function resetBudget() {
+            state.budget = {
+                job: 180000,
+                gigs: 50000,
+                family: 40000,
+                rent: 120000,
+                super: 70000,
+                utilities: 25000,
+                transport: 20000,
+                leisure: 15000,
+                saving: 20000
+            };
+            for (let key in state.budget) {
+                const el = document.getElementById(`range-${key}`);
+                if (el) el.value = state.budget[key];
+                const valEl = document.getElementById(`val-${key}`);
+                if (valEl) valEl.innerText = formatCurrency(state.budget[key]);
+            }
+            calculateBudget();
+        }
+
+        function calculateBudget() {
+            const b = state.budget;
+            const totalIncome = b.job + b.gigs + b.family;
+            const totalExpenses = b.rent + b.super + b.utilities + b.transport + b.leisure + b.saving;
+            const balance = totalIncome - totalExpenses;
+
+            document.getElementById('summary-income').innerText = formatCurrency(totalIncome);
+            document.getElementById('summary-expenses').innerText = formatCurrency(totalExpenses);
+
+            const balanceCard = document.getElementById('balance-card');
+            const balanceLabel = document.getElementById('balance-label');
+            const summaryBalance = document.getElementById('summary-balance');
+            const budgetAdvice = document.getElementById('budget-advice');
+
+            summaryBalance.innerText = formatCurrency(Math.abs(balance));
+
+            if (balance > 0) {
+                balanceCard.className = "p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all duration-300 bg-emerald-950/40 border-emerald-500/30";
+                balanceLabel.className = "text-xs font-semibold tracking-wider uppercase text-emerald-400 mb-1";
+                balanceLabel.innerText = "Superávit Mensual (Ahorro extra)";
+                summaryBalance.className = "text-2xl sm:text-3xl font-extrabold text-emerald-400";
+                budgetAdvice.className = "p-4 rounded-xl bg-emerald-900/20 border border-emerald-500/30 text-emerald-200 text-xs sm:text-sm flex items-start gap-3";
+                budgetAdvice.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-lg mt-0.5"></i><div><span class="font-bold block mb-0.5">¡Excelente gestión!</span>Tus ingresos superan tus gastos. Podrás potenciar tus ahorros o darte algún gusto sin culpa.</div>`;
+            } else if (balance === 0) {
+                balanceCard.className = "p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all duration-300 bg-amber-950/40 border-amber-500/30";
+                balanceLabel.className = "text-xs font-semibold tracking-wider uppercase text-amber-400 mb-1";
+                balanceLabel.innerText = "Equilibrio Justo";
+                summaryBalance.className = "text-2xl sm:text-3xl font-extrabold text-amber-400";
+                budgetAdvice.className = "p-4 rounded-xl bg-amber-900/20 border border-amber-500/30 text-amber-200 text-xs sm:text-sm flex items-start gap-3";
+                budgetAdvice.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg mt-0.5"></i><div><span class="font-bold block mb-0.5">Cuidado con los imprevistos</span>Tus cuentas cierran exactas, pero cualquier gasto sorpresa te dejará en rojo. Intenta recortar algún gasto o buscar más ingresos.</div>`;
+            } else {
+                balanceCard.className = "p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all duration-300 bg-rose-950/40 border-rose-500/30";
+                balanceLabel.className = "text-xs font-semibold tracking-wider uppercase text-rose-400 mb-1";
+                balanceLabel.innerText = "¡Déficit Financiero!";
+                summaryBalance.className = "text-2xl sm:text-3xl font-extrabold text-rose-400";
+                budgetAdvice.className = "p-4 rounded-xl bg-rose-900/20 border border-rose-500/30 text-rose-200 text-xs sm:text-sm flex items-start gap-3";
+                budgetAdvice.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400 text-lg mt-0.5"></i><div><span class="font-bold block mb-0.5">¡Alerta roja!</span>Gastas más de lo que ingresas. Si sigues así, te quedarás sin ahorros en pocos meses. Reduce alquiler, ocio o busca otro empleo.</div>`;
+            }
+
+            // Progress bars distribution
+            const rentPct = totalExpenses > 0 ? Math.round((b.rent / totalExpenses) * 100) : 0;
+            const superPct = totalExpenses > 0 ? Math.round((b.super / totalExpenses) * 100) : 0;
+            const othersPct = 100 - rentPct - superPct;
+
+            document.getElementById('pct-rent').innerText = rentPct + '%';
+            document.getElementById('bar-rent').style.width = rentPct + '%';
+
+            document.getElementById('pct-super').innerText = superPct + '%';
+            document.getElementById('bar-super').style.width = superPct + '%';
+
+            document.getElementById('pct-others').innerText = Math.max(0, othersPct) + '%';
+            document.getElementById('bar-others').style.width = Math.max(0, othersPct) + '%';
+        }
+
+        // --- CHALLENGES / EVENTS LOGIC ---
+        const eventsList = [
+            {
+                title: "¡Se rompió el lavarropas!",
+                desc: "El tambor dejó de girar y necesitas arreglarlo urgente o comprar repuestos.",
+                icon: "fa-screwdriver-wrench",
+                cost: 45000,
+                stressDelta: 25,
+                optionA: { label: "Pagar service ($45,000)", effect: "savings", amount: -45000, stress: 15, text: "Pagaste el técnico usando tus ahorros. ¡Problema resuelto pero menos resto!" },
+                optionB: { label: "Lavar a mano y aguantar", effect: "stress", amount: 0, stress: 35, text: "Te ahorraste el dinero pero tu nivel de estrés aumentó por el cansancio diario." }
+            },
+            {
+                title: "Aumento inesperado de expensas",
+                desc: "El consorcio votó arreglos en el edificio y tus expensas subieron un 40% este mes.",
+                icon: "fa-file-invoice-dollar",
+                cost: 25000,
+                stressDelta: 15,
+                optionA: { label: "Pagar recortando en ocio", effect: "savings", amount: -25000, stress: 10, text: "Pagaste las expensas ajustando tu presupuesto de salidas del mes." },
+                optionB: { label: "Pagar con tarjeta (financiar)", effect: "debt", amount: -25000, stress: 30, text: "Financiaste el gasto con tarjeta, acumulando intereses para el próximo mes." }
+            },
+            {
+                title: "Supermercado más caro de lo esperado",
+                desc: "La inflación y los productos de limpieza básicos elevaron tu ticket de compras.",
+                icon: "fa-cart-shopping",
+                cost: 30000,
+                stressDelta: 20,
+                optionA: { label: "Ajustar ahorro mensual", effect: "savings", amount: -30000, stress: 10, text: "Destinaste menos dinero al ahorro este mes para cubrir la comida." },
+                optionB: { label: "Comprar marcas más económicas", effect: "stress", amount: -15000, stress: 5, text: "Optaste por segundas marcas y gastaste solo $15,000 extra." }
+            },
+            {
+                title: "¡Oportunidad de Changa Extra!",
+                desc: "Un conocido te ofrece un trabajo freelance rápido durante el fin de semana.",
+                icon: "fa-hand-holding-dollar",
+                cost: -50000,
+                stressDelta: -15,
+                optionA: { label: "Aceptar y trabajar el fin de semana", effect: "income", amount: 50000, stress: 20, text: "¡Genial! Ganaste $50,000 extra aunque sacrificaste tu descanso." },
+                optionB: { label: "Rechazar por descanso", effect: "rest", amount: 0, stress: -10, text: "Preferiste descansar y cuidar tu salud mental. Todo en orden." }
+            }
+        ];
+
+        function triggerRandomEvent() {
+            const ev = eventsList[Math.floor(Math.random() * eventsList.length)];
+            
+            document.getElementById('event-icon').innerHTML = `<i class="fa-solid ${ev.icon}"></i>`;
+            document.getElementById('event-title').innerText = ev.title;
+            document.getElementById('event-desc').innerText = ev.desc;
+            document.getElementById('event-badge').innerText = "Desafío Activo";
+
+            const actionsDiv = document.getElementById('event-actions');
+            actionsDiv.innerHTML = `
+                <button onclick='resolveEvent(${JSON.stringify(ev)}, "A")' class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-emerald-600/20 text-left flex flex-col gap-1">
+                    <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-check"></i> ${ev.optionA.label}</span>
+                </button>
+                <button onclick='resolveEvent(${JSON.stringify(ev)}, "B")' class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-indigo-600/20 text-left flex flex-col gap-1">
+                    <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-arrow-right"></i> ${ev.optionB.label}</span>
+                </button>
+            `;
+        }
+
+        function resolveEvent(ev, choice) {
+            const opt = choice === 'A' ? ev.optionA : ev.optionB;
+            
+            if (opt.effect === 'savings' || opt.effect === 'debt') {
+                state.game.savings += opt.amount; // amount is negative for costs
+            } else if (opt.effect === 'income') {
+                state.game.savings += opt.amount; // positive
+            }
+
+            state.game.stress = Math.max(0, Math.min(100, state.game.stress + opt.stress));
+            state.game.resolvedCount += 1;
+
+            updateGameStats();
+
+            // Show result
+            document.getElementById('event-title').innerText = "¡Resultado de tu Decisión!";
+            document.getElementById('event-desc').innerText = opt.text;
+            document.getElementById('event-badge').innerText = "Desafío Superado";
+            document.getElementById('event-icon').innerHTML = `<i class="fa-solid fa-face-smile text-emerald-400"></i>`;
+
+            document.getElementById('event-actions').innerHTML = `
+                <button onclick="triggerRandomEvent()" class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 sm:col-span-2">
+                    <i class="fa-solid fa-dice"></i> Lanzar Siguiente Desafío
+                </button>
+            `;
+        }
+
+        function updateGameStats() {
+            document.getElementById('game-savings').innerText = formatCurrency(state.game.savings);
+            document.getElementById('header-savings').innerText = formatCurrency(state.game.savings);
+            
+            let stressLevelText = "Bajo";
+            if (state.game.stress > 70) stressLevelText = "¡Crítico!";
+            else if (state.game.stress > 40) stressLevelText = "Moderado";
+
+            const stressStr = `${stressLevelText} (${state.game.stress}%)`;
+            document.getElementById('game-stress').innerText = stressStr;
+            document.getElementById('header-stress').innerText = stressStr;
+            document.getElementById('game-resolved').innerText = state.game.resolvedCount;
+        }
+
+        // --- CHECKLIST LOGIC ---
+        function renderChecklist() {
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            state.checklist.forEach(item => {
+                if (item.done) completedCount++;
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-xl border transition-all flex items-start gap-3 ${item.done ? 'bg-emerald-950/20 border-emerald-500/30 text-slate-300' : 'bg-slate-900/60 border-slate-800 text-slate-300'}`;
+                div.innerHTML = `
+                    <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleChecklistItem(${item.id})" class="mt-1 w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                    <div class="flex-grow">
+                        <span class="text-xs uppercase font-semibold px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700 inline-block mb-1">${item.category}</span>
+                        <p class="text-sm font-medium ${item.done ? 'line-through text-slate-400' : 'text-white'}">${item.text}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('checklist-counter').innerText = `${completedCount} de ${state.checklist.length} completados`;
+        }
+
+        function toggleChecklistItem(id) {
+            const item = state.checklist.find(i => i.id === id);
+            if (item) {
+                item.done = !item.done;
+                renderChecklist();
+            }
+        }
+
+        function resetChecklist() {
+            state.checklist.forEach(i => i.done = false);
+            renderChecklist();
+        }
+
+        // --- ACCORDION LOGIC ---
+        function toggleAccordion(id) {
+            const content = document.getElementById(`content-acc-${id}`);
+            const icon = document.getElementById(`icon-acc-${id}`);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            calculateBudget();
+            renderChecklist();
+            updateGameStats();
+        };
+    </script>
+</body>
+</html>
